@@ -1,0 +1,26 @@
+--cpu=Cortex-M4.fp
+"pwm_external_pullup\startup_stm32f407xx.o"
+"pwm_external_pullup\main.o"
+"pwm_external_pullup\stm32f4xx_it.o"
+"pwm_external_pullup\stm32f4xx_hal_msp.o"
+"pwm_external_pullup\stm32f4xx_hal_spi.o"
+"pwm_external_pullup\stm32f4xx_hal_tim.o"
+"pwm_external_pullup\stm32f4xx_hal_tim_ex.o"
+"pwm_external_pullup\stm32f4xx_hal_uart.o"
+"pwm_external_pullup\stm32f4xx_hal_rcc.o"
+"pwm_external_pullup\stm32f4xx_hal_rcc_ex.o"
+"pwm_external_pullup\stm32f4xx_hal_flash.o"
+"pwm_external_pullup\stm32f4xx_hal_flash_ex.o"
+"pwm_external_pullup\stm32f4xx_hal_flash_ramfunc.o"
+"pwm_external_pullup\stm32f4xx_hal_gpio.o"
+"pwm_external_pullup\stm32f4xx_hal_dma_ex.o"
+"pwm_external_pullup\stm32f4xx_hal_dma.o"
+"pwm_external_pullup\stm32f4xx_hal_pwr.o"
+"pwm_external_pullup\stm32f4xx_hal_pwr_ex.o"
+"pwm_external_pullup\stm32f4xx_hal_cortex.o"
+"pwm_external_pullup\stm32f4xx_hal.o"
+"pwm_external_pullup\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "PWM_external_pullup\PWM_external_pullup.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "PWM_external_pullup.map" -o PWM_external_pullup\PWM_external_pullup.axf
