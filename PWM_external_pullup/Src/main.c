@@ -19,8 +19,18 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdlib.h"
-#include <math.h> 
+#include "stm32f4xx_hal.h"
+#include "i2c.h"
+#include <string.h>
+#include "gpio.h"
+#include "mpu6050.h"
+//#include "stdlib.h"
+//#include "stdint.h" // makes uint8_t available
+
+
+#include <math.h>
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,6 +49,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
@@ -56,6 +68,14 @@ UART_HandleTypeDef huart1;
 uint8_t received_data1;
 uint8_t received_data[4];
 
+
+// acc_x, acc_y, acc_z, gyr_x, gyr_y, gyr_z;
+//float ax, ay, az, gx, gy, gz, temperature, roll, pitch;
+//float q0_mah, q1_mah, q2_mah, q3_mah;
+//float q0_mad, q1_mad, q2_mad, q3_mad;
+//uint8_t buffer[128];
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,6 +86,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_TIM11_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 //PRZERWANIE - odbiór danych z uarta (wiele znaków, sterowanie predkoscia i kierunkiem)
@@ -83,40 +104,48 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if(servo == 'S' || servo == 's') { //jezeli chcemy sterowac predkoscia [S]peed
 		if( direction == 'F' || direction == 'f'){    //jazda do przodu [F]orward
 			TIM4->CCR3 = (int)(74 - (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			size = sprintf(send_data, "Wlazl w ifa z 'xD', a wartosc CCR3 to '%d'.\n\r", TIM4->CCR3);
+			size = sprintf(send_data, "SF%d, TIM4: %d\n", speed, TIM4->CCR3);
 		}
 		else if(direction == 'R' || direction == 'r') {      //jazda do tylu [R]everse
 			TIM4->CCR3 = (int)(74 + (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			size = sprintf(send_data, "Wlazl w ifa z 'SR', a wartosc speed to '%d'\n\r", TIM4->CCR3);
+			size = sprintf(send_data, "SR%d, TIM4: %d\n", speed, TIM4->CCR3);
 		}
 		else{		// znaki inne niz przewidziane
-			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n\r");
+			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 		}
 	}
 	else if(servo == 'T' || servo == 't'){        // jezeli chcemy skrecac [T]urn
 		if(direction == 'R' || direction == 'r'){   // skrecamy w prawo [R]ight
 			TIM2->CCR2 = (int)(56 - (30 * speed/100));
-			size = sprintf(send_data, "Wlazl w ifa z 'TR', a wartosc CCR2 to '%d'\n\r", TIM2->CCR2);
+			size = sprintf(send_data, "TR%d, TIM2: %d\n", speed, TIM2->CCR2);
 		}
 		else if(direction == 'L' || direction == 'l') {    //skrecamy w lewo [L]eft
 			TIM2->CCR2 = (int)(56 + (30 * speed/100));
-			size = sprintf(send_data, "Wlazl w ifa z 'TL', a wartosc CCR2 to '%d'.\n\r", TIM2->CCR2);
+			size = sprintf(send_data, "TL%d, TIM2: %d\n", speed, TIM2->CCR2);
 		}
 		else{   // znaki inne niz przewidziane
-			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n\r");
+			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 		}
 	}
 	else {  // znaki inne niz przewidziane
-		size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n\r");
+		size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 	}
 	
 	//size = sprintf(send_data, "Odebrana wiadomosc: '%s'\n\r", received_data);
 	//wyslanie przygotowanej wiadomosci
-	HAL_UART_Transmit_IT(&huart1, send_data, size);
+	//HAL_UART_Transmit_IT(&huart1, send_data, size);
   //Ponowne wlaczenie nasluchiwania
   HAL_UART_Receive_IT(&huart1, received_data, 4);
    //Dioda informujaca o tym ze UART odebral dane
 	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
+	
+	
+	
+	// Tutaj dodac wysylanie danych?
+	
+	
+	
+	
 }
 
 //PRZERWANIE - odbiór danych z uarta (jeden znak ON/OFF)
@@ -167,7 +196,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 // size = sprintf(data, "Liczba wyslanych wiadomosci: %d.\n\r", cnt); // Stworzenie wiadomosci do wyslania oraz przypisanie ilosci wysylanych znakow do zmiennej size. 
 // HAL_UART_Transmit_IT(&huart1, data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan 
 // //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15); // Zmiana stanu pinu na diodzie LED 
+
+
+
+
+// czy uzyc tej fukcji do wysylania polozenia z zadana czestotliwoscia????
+
+
 //} 
+
 
 /* USER CODE END PFP */
 
@@ -209,6 +246,7 @@ int main(void)
   MX_TIM11_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
@@ -288,6 +326,40 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 400000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**

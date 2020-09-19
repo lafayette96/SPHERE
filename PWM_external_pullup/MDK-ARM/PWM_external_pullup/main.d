@@ -25,11 +25,16 @@ pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_co
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h
+pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 pwm_external_pullup\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-pwm_external_pullup\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+pwm_external_pullup\main.o: ../Inc/i2c.h
+pwm_external_pullup\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+pwm_external_pullup\main.o: ../Inc/gpio.h
+pwm_external_pullup\main.o: ../Inc/mpu6050.h
 pwm_external_pullup\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
