@@ -24,11 +24,9 @@
 #include <string.h>
 #include "gpio.h"
 #include "mpu6050.h"
+#include <math.h>
 //#include "stdlib.h"
 //#include "stdint.h" // makes uint8_t available
-
-
-#include <math.h>
 
 
 /* USER CODE END Includes */
@@ -60,22 +58,16 @@ TIM_HandleTypeDef htim11;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-//static uint16_t cnt = 0; // Licznik wyslanych wiadomosci
-//uint8_t  RX_data[50]; // Tablica do odbioru danych
-//uint8_t  TX_data[4]; // Tablica do wysylania danych
-//uint16_t TX_size = 0; // Rozmiar wysylanej wiadomosci
-//uint8_t  FLAG_UART_RECIVED=0;
 uint8_t received_data1;
 uint8_t received_data[4];
 
-
-// acc_x, acc_y, acc_z, gyr_x, gyr_y, gyr_z;
-//float ax, ay, az, gx, gy, gz, temperature, roll, pitch;
-//float q0_mah, q1_mah, q2_mah, q3_mah;
-//float q0_mad, q1_mad, q2_mad, q3_mad;
-//uint8_t buffer[128];
-
-
+int16_t acc_x, acc_y, acc_z, gyr_x, gyr_y, gyr_z;
+float ax, ay, az, gx, gy, gz, temperature, roll, pitch;
+float q0_mah, q1_mah, q2_mah, q3_mah;
+float q0_mad, q1_mad, q2_mad, q3_mad;
+uint8_t buffer[128];
+uint8_t send_data[50];
+uint16_t size = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,8 +83,8 @@ static void MX_I2C1_Init(void);
 
 //PRZERWANIE - odbiór danych z uarta (wiele znaków, sterowanie predkoscia i kierunkiem)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	uint8_t send_data[50];
-	uint16_t size = 0;
+	//uint8_t send_data[50];
+	//uint16_t size = 0;
 	
 	uint8_t servo = received_data[0]; // S - bez blokady, T - z blokada
 	uint8_t direction = received_data[1]; //Left, Right, albo Forward, Reverse
@@ -104,32 +96,35 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if(servo == 'S' || servo == 's') { //jezeli chcemy sterowac predkoscia [S]peed
 		if( direction == 'F' || direction == 'f'){    //jazda do przodu [F]orward
 			TIM4->CCR3 = (int)(74 - (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			size = sprintf(send_data, "SF%d, TIM4: %d\n", speed, TIM4->CCR3);
+			//size = sprintf(send_data, "SF%d, TIM4: %d\n", speed, TIM4->CCR3);
 		}
 		else if(direction == 'R' || direction == 'r') {      //jazda do tylu [R]everse
 			TIM4->CCR3 = (int)(74 + (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			size = sprintf(send_data, "SR%d, TIM4: %d\n", speed, TIM4->CCR3);
+			//size = sprintf(send_data, "SR%d, TIM4: %d\n", speed, TIM4->CCR3);
 		}
 		else{		// znaki inne niz przewidziane
-			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
+			//size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 		}
 	}
 	else if(servo == 'T' || servo == 't'){        // jezeli chcemy skrecac [T]urn
 		if(direction == 'R' || direction == 'r'){   // skrecamy w prawo [R]ight
 			TIM2->CCR2 = (int)(56 - (30 * speed/100));
-			size = sprintf(send_data, "TR%d, TIM2: %d\n", speed, TIM2->CCR2);
+			//size = sprintf(send_data, "TR%d, TIM2: %d\n", speed, TIM2->CCR2);
 		}
 		else if(direction == 'L' || direction == 'l') {    //skrecamy w lewo [L]eft
 			TIM2->CCR2 = (int)(56 + (30 * speed/100));
-			size = sprintf(send_data, "TL%d, TIM2: %d\n", speed, TIM2->CCR2);
+			//size = sprintf(send_data, "TL%d, TIM2: %d\n", speed, TIM2->CCR2);
 		}
 		else{   // znaki inne niz przewidziane
-			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
+			//size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 		}
 	}
 	else {  // znaki inne niz przewidziane
-		size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
+		//size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
 	}
+	
+	
+	//size = sprintf(send_data, "Roll: %f.2f  Pitch: %f.2f \n", roll, pitch);
 	
 	//size = sprintf(send_data, "Odebrana wiadomosc: '%s'\n\r", received_data);
 	//wyslanie przygotowanej wiadomosci
@@ -138,71 +133,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   HAL_UART_Receive_IT(&huart1, received_data, 4);
    //Dioda informujaca o tym ze UART odebral dane
 	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
-	
-	
-	
-	// Tutaj dodac wysylanie danych?
-	
-	
-	
-	
 }
 
-//PRZERWANIE - odbiór danych z uarta (jeden znak ON/OFF)
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-//	
-//	uint8_t send_data[50];
-//  uint16_t size = 0;
-//	
-//	switch(atoi(&received_data1)) {
-//		
-//		case 0: // Jezeli odebrany zostanie znak 0
-//		size = sprintf(send_data, "STOP\n\r");
-//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
-//		TIM4->CCR3 = 74;
-//		break;
-// 
-//	  case 1: // Jezeli odebrany zostanie znak 1
-//	  size = sprintf(send_data, "START\n\r");
-//	  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-//		TIM4->CCR3 = 80;
-//		
-//	  break;
-//	 
-//	  default: // Jezeli odebrano nieobslugiwany znak
-//	  size = sprintf(send_data, "Odebrano nieznany znak:%c\n\r", received_data1);
-//	  break;		
-//	}
-//	
-//	
-//	//size = sprintf(send_data, "Do rejestru CCR3 TIM4 wpisano:%s\n\r", received_data);//received_data
-//	
-//	//wyslanie przygotowanej wiadomosci
-//	 HAL_UART_Transmit_IT(&huart1, send_data, size);
-//   //Ponowne wlaczenie nasluchiwania
-//   HAL_UART_Receive_IT(&huart1, &received_data1, 1);
-//   //Dioda informujaca o tym ze UART odebral dane
-//	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
-//}
 
 //funkcja wysylajaca dane do komputera z czestotliwoscia 1Hz (przerwanie od timera)
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) { 
-// 
-// static uint16_t cnt = 0; // Licznik wyslanych wiadomosci 
-// uint8_t data[50];// Tablica przechowujaca wysylana wiadomosc. 
-// uint16_t size = 0; // Rozmiar wysylanej wiadomosci ++cnt; // Zwiekszenie licznika wyslanych wiadomosci. 
-// 
-// ++cnt; // Zwiekszenie licznika wyslanych wiadomosci.
-// size = sprintf(data, "Liczba wyslanych wiadomosci: %d.\n\r", cnt); // Stworzenie wiadomosci do wyslania oraz przypisanie ilosci wysylanych znakow do zmiennej size. 
-// HAL_UART_Transmit_IT(&huart1, data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan 
-// //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15); // Zmiana stanu pinu na diodzie LED 
-
-
-
-
-// czy uzyc tej fukcji do wysylania polozenia z zadana czestotliwoscia????
-
-
+//	uint8_t data[50];// Tablica przechowujaca wysylana wiadomosc.
+//	uint16_t size = 0; // Rozmiar wysylanej wiadomosci 
+////	//static uint16_t cnt = 0; // Licznik wyslanych wiadomosci
+////	
+//	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13); // Zmiana stanu pinu na diodzie LED (pomaranczowej)
+////	
+//	size = sprintf(data, "Roll: %f  Pitch: %f \n", roll, pitch);  // Wiadomosc do wyslania i przypisanie ilosci wysylanych znakow do zmiennej size.
+////	
+//	HAL_UART_Transmit_IT(&huart1, data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan 
+////	HAL_UART_Receive_IT(&huart1, received_data, 4);
+////	//++cnt; // Zwiekszenie licznika wyslanych wiadomosci.
 //} 
 
 
@@ -252,10 +198,37 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 	HAL_TIM_Base_Start_IT(&htim11);
 	HAL_UART_Receive_IT(&huart1, received_data, 4); //odbieramy 4 znaki z uart1 i zapisujemy do received_data
-	TIM4->CCR3 = 74; 		// Servo bez blokady: 40-0.8ms, 50-1.0ms, 80-1.6ms, 100-2.0ms, 110-2.2ms  74- STOP
+	TIM4->CCR3 = 74;
+	//TIM4->CCR3 = 74; 		// Servo bez blokady: 40-0.8ms, 50-1.0ms, 80-1.6ms, 100-2.0ms, 110-2.2ms  74- STOP
 	TIM2->CCR2 = 56; // Servo z blokada: 20-0.4ms, 130-2.6ms  32- lewe skrajne, 56-srodek, 80-prawe skrajne
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
 
+// IMU Functions:
+	MPU6050_Init(&hi2c1);
+
+  MPU6050_SetInterruptMode(MPU6050_INTMODE_ACTIVEHIGH);
+  MPU6050_SetInterruptDrive(MPU6050_INTDRV_PUSHPULL);
+  MPU6050_SetInterruptLatch(MPU6050_INTLATCH_WAITCLEAR);
+  MPU6050_SetInterruptLatchClear(MPU6050_INTCLEAR_STATUSREAD);
+
+  MPU6050_SetIntEnableRegister(0); // Disable all interrupts
+
+  // Enable Motion interrputs
+  MPU6050_SetDHPFMode(MPU6050_DHPF_5);
+
+  MPU6050_SetIntMotionEnabled(1);
+  MPU6050_SetIntZeroMotionEnabled(1);
+  MPU6050_SetIntFreeFallEnabled(1);
+
+  MPU6050_SetFreeFallDetectionDuration(2);
+  MPU6050_SetFreeFallDetectionThreshold(5);
+
+  MPU6050_SetMotionDetectionDuration(5);
+  MPU6050_SetMotionDetectionThreshold(2);
+
+  MPU6050_SetZeroMotionDetectionDuration(2);
+  MPU6050_SetZeroMotionDetectionThreshold(4);
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -276,11 +249,24 @@ int main(void)
 		TIM2->CCR2 = 110;
 		HAL_Delay(1000);
 		TIM2->CCR2 = 130;*/
-			
 		
+		MPU6050_GetAccelerometerScaled(&ax, &ay, &az);
+	  MPU6050_GetGyroscopeScaled(&gx, &gy, &gz);
+		MPU6050_GetRollPitch(&roll, &pitch);
+		
+		//size = sprintf(send_data, "Roll: %.2f  Pitch: %.2f \n", roll, pitch);
+		//size = sprintf(send_data, "%.2f,%.2f \n", roll, pitch);
+		size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz);
+		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", ay, az, gx);
+		HAL_UART_Transmit_IT(&huart1, send_data, size);
+		
+		HAL_Delay(40); //can go down to 18
+	
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		
+		
   }
   /* USER CODE END 3 */
 }
@@ -300,12 +286,11 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /**Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
@@ -590,6 +575,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -598,7 +584,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(MEMS_CS_GPIO_Port, MEMS_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);
@@ -610,8 +596,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(MEMS_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PD12 PD15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_15;
+  /*Configure GPIO pins : PD12 PD13 PD15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

@@ -72,7 +72,11 @@ def get_gamepad_event():
 					ser.write(b'SF00')
 			if event.ev_type == "Absolute" and event.code == "ABS_X":
 				compute_turn_value(event.state)
-				
+		
+		# Print IMU measurements
+		received_text = ser.readline()
+		print(received_text)
+		
 		# for event in events:
 			# print(event.ev_type, event.code, event.state)
 

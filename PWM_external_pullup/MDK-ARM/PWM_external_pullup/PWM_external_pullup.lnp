@@ -1,5 +1,6 @@
 --cpu=Cortex-M4.fp
 "pwm_external_pullup\startup_stm32f407xx.o"
+"pwm_external_pullup\mpu6050.o"
 "pwm_external_pullup\main.o"
 "pwm_external_pullup\stm32f4xx_it.o"
 "pwm_external_pullup\stm32f4xx_hal_msp.o"

@@ -30,29 +30,15 @@ Build target 'PWM_external_pullup'
 compiling main.c...
 ../Inc/mpu6050.h(462): warning:  #1295-D: Deprecated declaration MPU6050_GetDeviceID - give arg types
   uint8_t MPU6050_GetDeviceID();
-../Src/main.c(99): warning:  #223-D: function "atoi" declared implicitly
+../Src/main.c(91): warning:  #223-D: function "atoi" declared implicitly
   	int speed = atoi(&received_data[2]);// + atoi(&received_data[3]); //  0-99% ???
-../Src/main.c(107): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "SF%d, TIM4: %d\n", speed, TIM4->CCR3);
-../Src/main.c(111): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "SR%d, TIM4: %d\n", speed, TIM4->CCR3);
-../Src/main.c(114): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
-../Src/main.c(120): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "TR%d, TIM2: %d\n", speed, TIM2->CCR2);
-../Src/main.c(124): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "TL%d, TIM2: %d\n", speed, TIM2->CCR2);
-../Src/main.c(127): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  			size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
-../Src/main.c(131): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  		size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
-../Src/main.c(95): warning:  #550-D: variable "size"  was set but never used
-  	uint16_t size = 0;
-../Src/main.c: 10 warnings, 0 errors
+../Src/main.c(259): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+  		size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz);
+../Src/main.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=9272 RO-data=584 RW-data=24 ZI-data=1440  
+Program Size: Code=17984 RO-data=744 RW-data=72 ZI-data=1496  
 FromELF: creating hex file...
-"PWM_external_pullup\PWM_external_pullup.axf" - 0 Error(s), 10 Warning(s).
+"PWM_external_pullup\PWM_external_pullup.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -75,7 +61,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.1.2
-Build Time Elapsed:  00:00:06
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

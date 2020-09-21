@@ -65,7 +65,7 @@ dispatch_dictionary = {'-STOP-':STOP_button_callback}
 sg.theme('DarkTeal9')	# Add a touch of color
 
 try:
-	ser = serial.Serial(port='COM5', baudrate=9600, timeout=0.1)
+	ser = serial.Serial(port='COM5', baudrate=9600, timeout=3)
 except OSError as err:
 	print("\n\t ***Cannot connect to device!*** \n\n \t {0}".format(err))
 	# print('\n \t Retrying in 5s')
@@ -104,20 +104,25 @@ while True:
 	#else:
 	#	print('Event {} not in dispatch dictionary'.format(event))
 	
-	
 	speed2 = int(values['-SPEED-']) # [-10, 10]
 	turn2 = int(values['-TURN-']) # [-10, 10]
 
+	#Receive and print the message from the robot
+	# received_text = ser.read(50)
+	received_text = ser.readline()
+	print(received_text)
+	# print(received_text.decode('utf-8'))
+	# print('guwno')
+	
+	bytesToRead = ser.inWaiting()
+	print(ser.read(bytesToRead))
+	
 	
 	#Prepare and send the message to the robot:
 	# SPEED:
 	calculate_speed_adj(speed2)
 	# TURN:
 	calculate_turn(turn2)
-	
-	# received_text = ser.read(50)
-	received_text = ser.readline()
-	# print(received_text.decode('utf-8'))
 	
 	# for c in ser.read():
 		# line.append(c)
