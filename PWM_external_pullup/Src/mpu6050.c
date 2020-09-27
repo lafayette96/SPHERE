@@ -289,6 +289,45 @@ void MPU6050_GetRollPitch(float* Roll, float* Pitch)
 	*Pitch = -(atan2(acc_x, sqrt(acc_y*acc_y + acc_z*acc_z))*180.0)/M_PI;
 }
 
+void ComplementaryFilter(float* roll, float* pitch, float* rollGyro, float* rollAccel)
+{
+	//float accel_sensitivity = 16384.0;
+	//float gyro_sensitivity = 131.0;
+	//float acc_x, acc_y, acc_z;
+	
+	float dt = 0.02; 		//20ms sample rate 
+	float pitchAcc, rollAcc;
+	
+	float gyr_x, gyr_y, gyr_z;
+	int16_t acc_x_raw, acc_y_raw, acc_z_raw;
+	
+	MPU6050_GetAccelerometerRAW(&acc_x_raw, &acc_y_raw, &acc_z_raw);
+	MPU6050_GetGyroscopeScaled(&gyr_x, &gyr_y, &gyr_z);
+	//MPU6050_GetAccelerometerScaled(&acc_x, &acc_y, &acc_z);
+	
+	//Integrate gyroscope data -> int(angularSpeed)=angle
+	//*pitchGyro += gyr_x *dt;
+	*rollGyro -= gyr_y *dt;
+	*pitch += gyr_x * dt; // Angle around the X-axis
+	*roll -= gyr_y *dt;   // Angle around the Y-axis
+	
+	// Compensate for drift with accelerometer data if !bullshit
+  // Sensitivity = -2 to 2 G at 16Bit -> 2G = 32768 && 0.5G = 8192
+	int forceMagnitudeApprox = abs(acc_x_raw) + abs(acc_y_raw) + abs(acc_z_raw); 
+	
+	if(forceMagnitudeApprox > 8192 && forceMagnitudeApprox < 32768)		// 8192 = (0.5*(1/Acc_Scale)) 32768 = 4*8192
+	{
+		// Turning around the X axis results in a vector on the Y-axis
+		//*pitchAccel = atan2f((float)acc_y_raw, (float)acc_z_raw) * 180/M_PI;
+		pitchAcc = atan2f((float)acc_y_raw, (float)acc_z_raw) * 180/M_PI; 		//atan2f(floats) is a sigle precision version of atan2(doubles)
+		*pitch = *pitch * 0.978 + pitchAcc * 0.022;
+
+		// Turning around the Y axis results in a vector on the X-axis
+		rollAcc = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
+		*rollAccel = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
+		*roll = *roll * 0.978 + rollAcc * 0.022;
+	}
+}
 //
 //	Setting INT pin
 //

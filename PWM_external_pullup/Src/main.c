@@ -68,6 +68,10 @@ float q0_mad, q1_mad, q2_mad, q3_mad;
 uint8_t buffer[128];
 uint8_t send_data[50];
 uint16_t size = 0;
+
+float pitch_comp, roll_comp; //values from complementary filter 
+float pitchGyro, pitchAccel;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -140,11 +144,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) { 
 //	uint8_t data[50];// Tablica przechowujaca wysylana wiadomosc.
 //	uint16_t size = 0; // Rozmiar wysylanej wiadomosci 
-////	//static uint16_t cnt = 0; // Licznik wyslanych wiadomosci
-////	
-//	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13); // Zmiana stanu pinu na diodzie LED (pomaranczowej)
-////	
-//	size = sprintf(data, "Roll: %f  Pitch: %f \n", roll, pitch);  // Wiadomosc do wyslania i przypisanie ilosci wysylanych znakow do zmiennej size.
+////static uint16_t cnt = 0; // Licznik wyslanych wiadomosci
+//	
+//	//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13); // Zmiana stanu pinu na diodzie LED (pomaranczowej)
+//	size = sprintf(send_data, "%.2f,%.2f,%.2f \n", roll_comp, pitchGyro, pitchAccel);
+//	//size = sprintf(data, "Roll: %f  Pitch: %f \n", roll, pitch);  // Wiadomosc do wyslania i przypisanie ilosci wysylanych znakow do zmiennej size.
 ////	
 //	HAL_UART_Transmit_IT(&huart1, data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan 
 ////	HAL_UART_Receive_IT(&huart1, received_data, 4);
@@ -213,7 +217,7 @@ int main(void)
 
   MPU6050_SetIntEnableRegister(0); // Disable all interrupts
 
-  // Enable Motion interrputs
+  // Enable Motion interrputs, possibly unnecessary
   MPU6050_SetDHPFMode(MPU6050_DHPF_5);
 
   MPU6050_SetIntMotionEnabled(1);
@@ -254,13 +258,18 @@ int main(void)
 	  MPU6050_GetGyroscopeScaled(&gx, &gy, &gz);
 		MPU6050_GetRollPitch(&roll, &pitch);
 		
+		ComplementaryFilter(&roll_comp, &pitch_comp, &pitchGyro, &pitchAccel);
+		
 		//size = sprintf(send_data, "Roll: %.2f  Pitch: %.2f \n", roll, pitch);
-		//size = sprintf(send_data, "%.2f,%.2f \n", roll, pitch);
-		size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz);
+		size = sprintf(send_data, "%.2f,%.2f \n", roll_comp, pitch_comp);
+		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", roll_comp, pitchGyro, pitchAccel);
+		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f\n", roll, pitch, roll_comp, pitch_comp); //roll_comp is actually pitch_comp and vice versa
+		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz, roll_comp, pitch_comp);
+		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", gx, ay, az);
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", ay, az, gx);
 		HAL_UART_Transmit_IT(&huart1, send_data, size);
 		
-		HAL_Delay(40); //can go down to 18
+		HAL_Delay(20); //can go down to 18-20
 	
     /* USER CODE END WHILE */
 
