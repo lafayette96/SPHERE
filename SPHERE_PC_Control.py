@@ -29,20 +29,64 @@ def calculate_turn(turn2):
 
 
 def calculate_speed_adj(speed2):
+	# if speed2 == 0:
+		# mes_speed = bytes(str('SR00'), 'utf-8')
+	# elif speed2 > 0 and speed2 <= 3:
+		# mes_speed = bytes(str('SF04'), 'utf-8')
+	# elif speed2 > 3 and speed2 <= 6:
+		# mes_speed = bytes(str('SF07'), 'utf-8')
+	# elif speed2 > 6:
+		# mes_speed = bytes(str('SF20'), 'utf-8')
+	# elif speed2 < 0 and speed2 >= -3:
+		# mes_speed = bytes(str('SR04'), 'utf-8')
+	# elif speed2 < 3 and speed2 >= -6:
+		# mes_speed = bytes(str('SR07'), 'utf-8')
+	# elif speed2 < 6:
+		# mes_speed = bytes(str('SR20'), 'utf-8')
+	
 	if speed2 == 0:
 		mes_speed = bytes(str('SR00'), 'utf-8')
-	elif speed2 > 0 and speed2 <= 3:
-		mes_speed = bytes(str('SF04'), 'utf-8')
-	elif speed2 > 3 and speed2 <= 6:
+	elif speed2 == 1:
 		mes_speed = bytes(str('SF07'), 'utf-8')
-	elif speed2 > 6:
-		mes_speed = bytes(str('SF20'), 'utf-8')
-	elif speed2 < 0 and speed2 >= -3:
+	elif speed2 == 2:
+		mes_speed = bytes(str('SF10'), 'utf-8')
+	elif speed2 == 3:
+		mes_speed = bytes(str('SF15'), 'utf-8')
+	elif speed2 == 4:
+		mes_speed = bytes(str('SF25'), 'utf-8')
+	elif speed2 == 5:
+		mes_speed = bytes(str('SF30'), 'utf-8')
+	elif speed2 == 6:
+		mes_speed = bytes(str('SF40'), 'utf-8')
+	elif speed2 == 7:
+		mes_speed = bytes(str('SF50'), 'utf-8')
+	elif speed2 == 8:
+		mes_speed = bytes(str('SF60'), 'utf-8')
+	elif speed2 == 9:
+		mes_speed = bytes(str('SF65'), 'utf-8')
+	elif speed2 == 10:
+		mes_speed = bytes(str('SF99'), 'utf-8') 
+#-------------------------------------------------------
+	elif speed2 == -1:
 		mes_speed = bytes(str('SR04'), 'utf-8')
-	elif speed2 < 3 and speed2 >= -6:
+	elif speed2 == -2:
 		mes_speed = bytes(str('SR07'), 'utf-8')
-	elif speed2 < 6:
-		mes_speed = bytes(str('SR20'), 'utf-8')
+	elif speed2 == -3:
+		mes_speed = bytes(str('SR15'), 'utf-8')
+	elif speed2 == -4:
+		mes_speed = bytes(str('SR25'), 'utf-8')
+	elif speed2 == -5:
+		mes_speed = bytes(str('SR30'), 'utf-8')
+	elif speed2 == -6:
+		mes_speed = bytes(str('SR40'), 'utf-8')
+	elif speed2 == -7:
+		mes_speed = bytes(str('SR50'), 'utf-8')
+	elif speed2 == -8:
+		mes_speed = bytes(str('SR55'), 'utf-8')
+	elif speed2 == -9:
+		mes_speed = bytes(str('SR60'), 'utf-8')
+	elif speed2 == -10:
+		mes_speed = bytes(str('SR99'), 'utf-8')
 	
 	print(mes_speed)	
 	ser.write(mes_speed)
@@ -77,13 +121,15 @@ layout = [  [sg.Frame('Steering:',[[
 			 sg.Slider(range=(-10, 10), orientation='v', size=(12, 30), default_value=0, tick_interval=2, key='-SPEED-', enable_events=True)]]),
 			 sg.Button('STOP', button_color=('white', 'firebrick4'), size=(20,2), key='-STOP-', enable_events=True)],
 			[sg.Frame('Controllers:',[[
-			 sg.Radio('PID Controller',"RADIO1", default=True),
-			 sg.Radio('Fuzzy Controller',"RADIO1"),
-			 sg.Radio('Other Controller',"RADIO1"),]])]]
+			 sg.Radio('No Controller',"RADIO1", key='-NO-', default=True),
+			 sg.Radio('PID Controller',"RADIO1", key='-PID-'),
+			 sg.Radio('Fuzzy Controller',"RADIO1", key='-FUZZY-'),]])]]
 
 window = sg.Window('SPHERE PC Control', layout)
 
 ser.write(b'SF00')
+
+controller_type = 0
 
 while True:
 	event, values = window.read()
@@ -91,6 +137,13 @@ while True:
 	if event == sg.WIN_CLOSED or event == 'Cancel':	# if user closes window or clicks cancel
 		ser.write(b'SF00')
 		break
+	elif values['-NO-'] == True:
+		controller_type = 0
+	elif values['-PID-'] == True:
+		controller_type = 1
+	elif values['-FUZZY-'] == True:
+		controller_type = 2
+	
 	
 	# Lookup event in function dictionary
 	if event in dispatch_dictionary:
@@ -112,7 +165,9 @@ while True:
 	
 	# TURN:
 	calculate_turn(turn2)
-
+	
+	print(controller_type)
+	
 
 
 window.close()

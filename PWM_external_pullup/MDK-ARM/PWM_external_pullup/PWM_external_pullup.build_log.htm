@@ -32,13 +32,33 @@ compiling main.c...
   uint8_t MPU6050_GetDeviceID();
 ../Src/main.c(95): warning:  #223-D: function "atoi" declared implicitly
   	int speed = atoi(&received_data[2]);// + atoi(&received_data[3]); //  0-99% ???
-../Src/main.c(264): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
-  		size = sprintf(send_data, "%.2f,%.2f \n", roll_comp, pitch_comp);
+../Src/main.c(266): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+  		size = sprintf(send_data, "%.2f,%.2f \n", roll, pitch_comp);
 ../Src/main.c: 3 warnings, 0 errors
+compiling mpu6050.c...
+../Inc/mpu6050.h(462): warning:  #1295-D: Deprecated declaration MPU6050_GetDeviceID - give arg types
+  uint8_t MPU6050_GetDeviceID();
+..\Src\mpu6050.c(197): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	return (float)temp / 340 + 36.53;
+..\Src\mpu6050.c(316): warning:  #223-D: function "abs" declared implicitly
+  	int forceMagnitudeApprox = abs(acc_x_raw) + abs(acc_y_raw) + abs(acc_z_raw); 
+..\Src\mpu6050.c(322): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		pitchAcc = atan2f((float)acc_y_raw, (float)acc_z_raw) * 180/M_PI; 		//atan2f(floats) is a sigle precision version of atan2(doubles)
+..\Src\mpu6050.c(323): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		*pitch = *pitch * 0.978 + pitchAcc * 0.022;
+..\Src\mpu6050.c(323): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		*pitch = *pitch * 0.978 + pitchAcc * 0.022;
+..\Src\mpu6050.c(326): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		rollAcc = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
+..\Src\mpu6050.c(328): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		*roll = *roll * 0.978 + rollAcc * 0.022;
+..\Src\mpu6050.c(328): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		*roll = *roll * 0.978 + rollAcc * 0.022;
+..\Src\mpu6050.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=19040 RO-data=744 RW-data=88 ZI-data=1496  
+Program Size: Code=18920 RO-data=744 RW-data=80 ZI-data=1496  
 FromELF: creating hex file...
-"PWM_external_pullup\PWM_external_pullup.axf" - 0 Error(s), 3 Warning(s).
+"PWM_external_pullup\PWM_external_pullup.axf" - 0 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -61,7 +81,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.1.2
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:09
 </pre>
 </body>
 </html>

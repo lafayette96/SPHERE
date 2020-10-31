@@ -1,5 +1,6 @@
 import serial
 import time
+import sys
 
 def data_acquisition():
 	start_time = time.time()

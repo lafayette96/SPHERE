@@ -1,7 +1,7 @@
 Dependencies for Project 'PWM_external_pullup', Target 'PWM_external_pullup': (DO NOT MODIFY !)
 F (startup_stm32f407xx.s)(0x5F6A800A)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 526" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1"--list startup_stm32f407xx.lst --xref -o pwm_external_pullup\startup_stm32f407xx.o --depend pwm_external_pullup\startup_stm32f407xx.d)
-F (..\Inc\mpu6050.h)(0x5F6A6D0F)()
-F (..\Src\mpu6050.c)(0x5F70A1DA)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\MDK-ARM-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o pwm_external_pullup\mpu6050.o --omf_browse pwm_external_pullup\mpu6050.crf --depend pwm_external_pullup\mpu6050.d)
+F (..\Inc\mpu6050.h)(0x5F834010)()
+F (..\Src\mpu6050.c)(0x5F834013)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\MDK-ARM-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o pwm_external_pullup\mpu6050.o --omf_browse pwm_external_pullup\mpu6050.crf --depend pwm_external_pullup\mpu6050.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x5C1EC864)
 I (../Inc/stm32f4xx_hal_conf.h)(0x5F6A8005)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x5C1EC864)
@@ -36,9 +36,9 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x5C1EC864)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x5C1EC864)
 I (../Inc/i2c.h)(0x5C8146E3)
 I (../Inc/main.h)(0x5F6A8005)
-I (../Inc/mpu6050.h)(0x5F6A6D0F)
+I (../Inc/mpu6050.h)(0x5F834010)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599F3DAE)
-F (../Src/main.c)(0x5F70EA55)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\MDK-ARM-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o pwm_external_pullup\main.o --omf_browse pwm_external_pullup\main.crf --depend pwm_external_pullup\main.d)
+F (../Src/main.c)(0x5F83403D)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\MDK-ARM-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o pwm_external_pullup\main.o --omf_browse pwm_external_pullup\main.crf --depend pwm_external_pullup\main.d)
 I (../Inc/main.h)(0x5F6A8005)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x5C1EC864)
 I (../Inc/stm32f4xx_hal_conf.h)(0x5F6A8005)
@@ -75,7 +75,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x5C1EC864)
 I (../Inc/i2c.h)(0x5C8146E3)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599F3DAC)
 I (../Inc/gpio.h)(0x5C8146E3)
-I (../Inc/mpu6050.h)(0x5F6A6D0F)
+I (../Inc/mpu6050.h)(0x5F834010)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599F3DAE)
 F (../Src/stm32f4xx_it.c)(0x5F6A8004)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\MDK-ARM-I.\RTE\_PWM_external_pullup-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o pwm_external_pullup\stm32f4xx_it.o --omf_browse pwm_external_pullup\stm32f4xx_it.crf --depend pwm_external_pullup\stm32f4xx_it.d)
 I (../Inc/main.h)(0x5F6A8005)

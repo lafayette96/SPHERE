@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
 	print("**Connected to: " + ser.portstr +'**')
 	
-	f = open('Measurements/SPHERE_IMU_Measurements_NormalVSComplementary.txt', 'w+')
+	f = open('Measurements/SPHERE_IMU_Measurements_Samples.txt', 'w+')
 	
 	start = time.time()
 	

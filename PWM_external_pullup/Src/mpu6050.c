@@ -289,7 +289,7 @@ void MPU6050_GetRollPitch(float* Roll, float* Pitch)
 	*Pitch = -(atan2(acc_x, sqrt(acc_y*acc_y + acc_z*acc_z))*180.0)/M_PI;
 }
 
-void ComplementaryFilter(float* roll, float* pitch, float* rollGyro, float* rollAccel)
+void ComplementaryFilter(float* roll, float* pitch)//, float* rollGyro, float* rollAccel)
 {
 	//float accel_sensitivity = 16384.0;
 	//float gyro_sensitivity = 131.0;
@@ -307,7 +307,7 @@ void ComplementaryFilter(float* roll, float* pitch, float* rollGyro, float* roll
 	
 	//Integrate gyroscope data -> int(angularSpeed)=angle
 	//*pitchGyro += gyr_x *dt;
-	*rollGyro -= gyr_y *dt;
+	//*rollGyro -= gyr_y *dt;
 	*pitch += gyr_x * dt; // Angle around the X-axis
 	*roll -= gyr_y *dt;   // Angle around the Y-axis
 	
@@ -324,7 +324,7 @@ void ComplementaryFilter(float* roll, float* pitch, float* rollGyro, float* roll
 
 		// Turning around the Y axis results in a vector on the X-axis
 		rollAcc = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
-		*rollAccel = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
+		//*rollAccel = atan2f((float)acc_x_raw, (float)acc_z_raw) * 180/M_PI;
 		*roll = *roll * 0.978 + rollAcc * 0.022;
 	}
 }

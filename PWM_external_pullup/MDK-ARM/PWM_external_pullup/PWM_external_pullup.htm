@@ -3,9 +3,9 @@
 <title>Static Call Graph - [PWM_external_pullup\PWM_external_pullup.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image PWM_external_pullup\PWM_external_pullup.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Sep 27 21:39:21 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Oct 11 19:26:31 2020
 <BR><P>
-<H3>Maximum Stack Usage =        312 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        328 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; ComplementaryFilter &rArr; MPU6050_GetGyroscopeScaled &rArr; MPU6050_GetGyroscopeRAW &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 <P>
@@ -632,8 +632,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[7c]"></a>ComplementaryFilter</STRONG> (Thumb, 414 bytes, Stack size 88 bytes, mpu6050.o(i.ComplementaryFilter))
-<BR><BR>[Stack]<UL><LI>Max Depth = 296<LI>Call Chain = ComplementaryFilter &rArr; MPU6050_GetGyroscopeScaled &rArr; MPU6050_GetGyroscopeRAW &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[7c]"></a>ComplementaryFilter</STRONG> (Thumb, 324 bytes, Stack size 104 bytes, mpu6050.o(i.ComplementaryFilter))
+<BR><BR>[Stack]<UL><LI>Max Depth = 312<LI>Call Chain = ComplementaryFilter &rArr; MPU6050_GetGyroscopeScaled &rArr; MPU6050_GetGyroscopeRAW &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -1568,8 +1568,8 @@ Global Symbols
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 </UL>
 
-<P><STRONG><a name="[5c]"></a>main</STRONG> (Thumb, 390 bytes, Stack size 16 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 312<LI>Call Chain = main &rArr; ComplementaryFilter &rArr; MPU6050_GetGyroscopeScaled &rArr; MPU6050_GetGyroscopeRAW &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[5c]"></a>main</STRONG> (Thumb, 384 bytes, Stack size 16 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 328<LI>Call Chain = main &rArr; ComplementaryFilter &rArr; MPU6050_GetGyroscopeScaled &rArr; MPU6050_GetGyroscopeRAW &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit_IT
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT

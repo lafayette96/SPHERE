@@ -100,11 +100,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if(servo == 'S' || servo == 's') { //jezeli chcemy sterowac predkoscia [S]peed
 		if( direction == 'F' || direction == 'f'){    //jazda do przodu [F]orward
 			TIM4->CCR3 = (int)(74 - (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			//size = sprintf(send_data, "SF%d, TIM4: %d\n", speed, TIM4->CCR3);
+			//size = sprintf(send_data, "SF%d, TIM4: %d, Roll: %.2f\n", speed, TIM4->CCR3, pitch_comp);
 		}
 		else if(direction == 'R' || direction == 'r') {      //jazda do tylu [R]everse
 			TIM4->CCR3 = (int)(74 + (34 * speed/100)); //zadajemy predkosc proporcjonalna do zadanej wahadla bez blokady
-			//size = sprintf(send_data, "SR%d, TIM4: %d\n", speed, TIM4->CCR3);
+			//size = sprintf(send_data, "SR%d, TIM4: %d, Roll: %.2f\n", speed, TIM4->CCR3, pitch_comp);
 		}
 		else{		// znaki inne niz przewidziane
 			//size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
@@ -113,11 +113,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	else if(servo == 'T' || servo == 't'){        // jezeli chcemy skrecac [T]urn
 		if(direction == 'R' || direction == 'r'){   // skrecamy w prawo [R]ight
 			TIM2->CCR2 = (int)(56 - (30 * speed/100));
-			//size = sprintf(send_data, "TR%d, TIM2: %d\n", speed, TIM2->CCR2);
+			//size = sprintf(send_data, "TR%d, TIM2: %d, Roll: %.2f\n", speed, TIM2->CCR2, pitch_comp);
 		}
 		else if(direction == 'L' || direction == 'l') {    //skrecamy w lewo [L]eft
 			TIM2->CCR2 = (int)(56 + (30 * speed/100));
-			//size = sprintf(send_data, "TL%d, TIM2: %d\n", speed, TIM2->CCR2);
+			//size = sprintf(send_data, "TL%d, TIM2: %d, Roll: %.2f\n", speed, TIM2->CCR2, pitch_comp);
 		}
 		else{   // znaki inne niz przewidziane
 			//size = sprintf(send_data, "Odebrana wiadomosc zawiera nieznane znaki!\n");
@@ -204,7 +204,7 @@ int main(void)
 	HAL_UART_Receive_IT(&huart1, received_data, 4); //odbieramy 4 znaki z uart1 i zapisujemy do received_data
 	TIM4->CCR3 = 74;
 	//TIM4->CCR3 = 74; 		// Servo bez blokady: 40-0.8ms, 50-1.0ms, 80-1.6ms, 100-2.0ms, 110-2.2ms  74- STOP
-	TIM2->CCR2 = 56; // Servo z blokada: 20-0.4ms, 130-2.6ms  32- lewe skrajne, 56-srodek, 80-prawe skrajne
+	TIM2->CCR2 = 56; // Servo z blokada: 20-0.4ms, 130-2.6ms  32[0.6ms]- lewe skrajne, 56[1.12ms]-srodek, 80[1.6ms]-prawe skrajne
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
 
 // IMU Functions:
@@ -258,18 +258,21 @@ int main(void)
 	  MPU6050_GetGyroscopeScaled(&gx, &gy, &gz);
 		MPU6050_GetRollPitch(&roll, &pitch);
 		
-		ComplementaryFilter(&roll_comp, &pitch_comp, &pitchGyro, &pitchAccel);
+		ComplementaryFilter(&roll_comp, &pitch_comp);//, &pitchGyro, &pitchAccel);
 		
 		//size = sprintf(send_data, "Roll: %.2f  Pitch: %.2f \n", roll, pitch);
-		size = sprintf(send_data, "%.2f,%.2f \n", roll_comp, pitch_comp);
+		
+		
+		size = sprintf(send_data, "%.2f,%.2f \n", roll, pitch_comp);
+		
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", roll_comp, pitchGyro, pitchAccel);
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f\n", roll, pitch, roll_comp, pitch_comp); //roll_comp is actually pitch_comp and vice versa
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz, roll_comp, pitch_comp);
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", gx, ay, az);
 		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", ay, az, gx);
 		HAL_UART_Transmit_IT(&huart1, send_data, size);
-		
-		HAL_Delay(20); //can go down to 18-20
+
+		HAL_Delay(10); //can go down to 18-20
 	
     /* USER CODE END WHILE */
 
