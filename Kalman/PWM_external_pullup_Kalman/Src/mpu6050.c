@@ -203,11 +203,8 @@ void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct) {
 
 void ComplementaryFilter(MPU6050_t *DataStruct, float* roll, float* pitch)
 {
-	//uint32_t timer;
-	double dt = 0.02;
-	//double dt = (double) (HAL_GetTick() - timer) / 1000; 		//20ms sample rate 
-	//timer = HAL_GetTick();
 	
+	double dt = 0.01465;
 	float pitchAcc, rollAcc;
 	
 	double gyr_x, gyr_y, gyr_z;

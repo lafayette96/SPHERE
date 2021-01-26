@@ -42,9 +42,9 @@
 #define P1   (float) -0.000067f
 #define P2   (float) -0.000287f
 #define P3   (float) 0.871698f
-#define KP   (float) 0.7f//1.0f //0.751
-#define KI   (float) -0.2f//-0.8f //-0.5f
-#define KD   (float) -0.2f//-0.11f//-0.125f
+#define KP   (float) 0.9f//0.7f //1.0f //0.751
+#define KI   (float) -0.035f//-0.2f //-0.8f
+#define KD   (float) -0.07f//-0.11f//-0.125f
 #define	TD   (float) 0.1f//0.1f
 #define TP   (float) 0.014f
 #define TRES (float) 0.0f
@@ -89,6 +89,7 @@ float pitchGyro, pitchAccel;
 
 uint16_t counter = 0;
 
+/*  *************PID**************  */ 
 //PID variables:
 float sphereRoll_SetPoint = 0.0;
 float roll_error = 0.0;
@@ -98,26 +99,27 @@ float control = 0.0;
 float prev_control = 0.0;
 float prev_prev_control = 0.0;
 
- /* Choose a controller mode*/ 
+ /* Choose a controller type
+		0 - no controller
+		1 - PID                      */ 
 uint8_t controller_type = 0;
-// 0 - no controller
-// 1 - PID
- 
- /*Mode 1 */
 float wspE  = (KP*TD+KD);
 float wspE1 = (KI*TP*TD + KP*(TP-2*TD) - 2*KD);
 float wspE2 = (TP-TD)*(KI*TP - KP) + KD;
 float wspU1 = -(TP-2*TD);
 float wspU2 = -(TD-TP);
 
+/* *************END PID**************  */ 
+
+
 /* Mode 2 */
-float proportional = 0;
-float integrator = 0;
-float differentiator = 0;
-float Kp = -0.9; //2.0;
-float Ki = 0.2;
-float Kd = 0.35; //0.0; 
-float T = 0.1; //0.01428;
+//float proportional = 0;
+//float integrator = 0;
+//float differentiator = 0;
+//float Kp = -0.7; //2.0;
+//float Ki = 0.1;
+//float Kd = 0.35; //0.0; 
+//float T = 0.1; //0.01428;
 
 
 /* USER CODE END PV */
@@ -157,11 +159,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		//MPU6050_GetAccelerometerScaled(&ax, &ay, &az);
 	  //MPU6050_GetGyroscopeScaled(&gx, &gy, &gz);
 		
-		ComplementaryFilter(&roll_comp, &pitch_comp);//, &pitchGyro, &pitchAccel);
-		MPU6050_GetRollPitch(&roll, &pitch);
+		//ComplementaryFilter(&roll_comp, &pitch_comp);//, &pitchGyro, &pitchAccel);
+		//MPU6050_GetRollPitch(&roll, &pitch);
 		
-		size = sprintf(send_data, "%.2f,%.2f,%d \n", control, pitch_comp, TIM2->CCR2);
-		//size = sprintf(send_data, "%.2f,%.2f,%d,%d \n", roll, pitch_comp, TIM2->CCR2, counter);
+		//Outputformat for debugging:
+		//size = sprintf(send_data, "%.2f,%.2f,%d \n", control, pitch_comp, TIM2->CCR2);
+		
+		//output format for GUI:
+		size = sprintf(send_data, "%.2f,%.2f,%d,%d \n", roll_comp, pitch_comp, TIM2->CCR2, TIM3->CCR1);
 		HAL_UART_Transmit_DMA(&huart1, send_data, size);
 
 	}
@@ -174,23 +179,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		//Calculate error between set and actual roll angle value
 		// sphereRoll_SetPoint = 0.0
 		// pitch_comp e[-45,45] deg
-		roll_error = sphereRoll_SetPoint - pitch_comp; //pitch_comp is actually roll_comp.
+		roll_error = sphereRoll_SetPoint - pitch_comp; //pitch_comp is actually roll_comp
 		
 		//Calculate control
-		//control = (roll_error*wspE + prev_roll_error*wspE1 + prev_prev_roll_error*wspE2 + ...
-		//... + prev_control*wspU1 + prev_prev_control*wspU2)/TD;
+		control = (roll_error*wspE + prev_roll_error*wspE1 + prev_prev_roll_error*wspE2 + prev_control*wspU1 + prev_prev_control*wspU2)/TD;
 		
-		proportional = Kp * roll_error;
-		integrator = integrator + 0.5f * Ki * T * (roll_error + prev_roll_error);
+		//proportional = Kp * roll_error;
+		//integrator = integrator + 0.5f * Ki * T * (roll_error + prev_roll_error);
 		
-		control = proportional - integrator; // + differentiator;
+		//control = proportional + integrator; // + differentiator;
 		
 		if(control>98)
 			 control = 98;
 		else if(control<-98)
 			 control = -98;
 		
-		if(controller_type == 1) { //if controller_type is a PID
+		if(controller_type == 0) { //if controller_type is a PID
 			TIM2->CCR2 = (int)(57 + (30 * control/100));
 		}
 		 
@@ -276,10 +280,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	//wyslanie przygotowanej wiadomosci
 	//HAL_UART_Transmit_IT(&huart1, send_data, size);
 	
-  //Ponowne wlaczenie nasluchiwania
-  HAL_UART_Receive_DMA(&huart1, received_data, 4);
-   //Dioda informujaca o tym ze UART odebral dane
-	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
+  
+  HAL_UART_Receive_DMA(&huart1, received_data, 4); //Enable listening
+	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15); //LED informing that UART collected data
 }
 
 
@@ -354,7 +357,7 @@ int main(void)
 	HAL_UART_Receive_DMA(&huart1, received_data, 4); //odbieramy 4 znaki z uart1 i zapisujemy do received_data
 
 	//TIM4->CCR3 = 74; 		// Servo bez blokady: 40-0.8ms, 50-1.0ms, 80-1.6ms, 100-2.0ms, 110-2.2ms  74- STOP
-	TIM4->CCR3 = 300;
+	//TIM4->CCR3 = 300;
 	TIM3->CCR1 = 300;
 	TIM2->CCR2 = 57; // Servo z blokada: 20-0.4ms, 130-2.6ms  32[0.6ms]- lewe skrajne, 56[1.12ms]-srodek, 80[1.6ms]-prawe skrajne
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
@@ -364,29 +367,6 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
 	
 	MPU6050_Init(&hi2c1);
-
-  MPU6050_SetInterruptMode(MPU6050_INTMODE_ACTIVEHIGH);
-  MPU6050_SetInterruptDrive(MPU6050_INTDRV_PUSHPULL);
-  MPU6050_SetInterruptLatch(MPU6050_INTLATCH_WAITCLEAR);
-  MPU6050_SetInterruptLatchClear(MPU6050_INTCLEAR_STATUSREAD);
-
-  MPU6050_SetIntEnableRegister(0); // Disable all interrupts
-
-  // Enable Motion interrputs, possibly unnecessary
-  MPU6050_SetDHPFMode(MPU6050_DHPF_5);
-
-  MPU6050_SetIntMotionEnabled(1);
-  MPU6050_SetIntZeroMotionEnabled(1);
-  MPU6050_SetIntFreeFallEnabled(1);
-
-  MPU6050_SetFreeFallDetectionDuration(2);
-  MPU6050_SetFreeFallDetectionThreshold(5);
-
-  MPU6050_SetMotionDetectionDuration(5);
-  MPU6050_SetMotionDetectionThreshold(2);
-
-  MPU6050_SetZeroMotionDetectionDuration(2);
-  MPU6050_SetZeroMotionDetectionThreshold(4);
 	
 	//PID
 	//wspE  = (KP*TD+KD);
@@ -400,43 +380,6 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
-		
-		/*
-		HAL_Delay(1000);
-		TIM3->CCR1 = 100;
-		HAL_Delay(2000);
-		TIM3->CCR1 = 500;
-		HAL_Delay(1000);
-		TIM2->CCR2 = 80;
-		HAL_Delay(1000);
-		TIM2->CCR2 = 80;
-		HAL_Delay(1000);
-		TIM2->CCR2 = 100;
-		HAL_Delay(1000);
-		TIM2->CCR2 = 110;
-		HAL_Delay(1000);
-		TIM2->CCR2 = 130;*/
-		
-	
-//		MPU6050_GetAccelerometerScaled(&ax, &ay, &az);
-//	  MPU6050_GetGyroscopeScaled(&gx, &gy, &gz);
-//		MPU6050_GetRollPitch(&roll, &pitch);
-//		
-//		ComplementaryFilter(&roll_comp, &pitch_comp);//, &pitchGyro, &pitchAccel);
-//		
-//		//size = sprintf(send_data, "Roll: %.2f  Pitch: %.2f \n", roll, pitch);
-//		
-//		
-//		size = sprintf(send_data, "%.2f,%.2f \n", roll, pitch_comp);
-//		
-//		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", roll_comp, pitchGyro, pitchAccel);
-//		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f\n", roll, pitch, roll_comp, pitch_comp); //roll_comp is actually pitch_comp and vice versa
-//		//size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", ax, ay, az, gx, gy, gz, roll_comp, pitch_comp);
-//		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", gx, ay, az);
-//		//size = sprintf(send_data, "%.2f,%.2f,%.2f\n", ay, az, gx);
-//		HAL_UART_Transmit_IT(&huart1, send_data, size);
-
-//		HAL_Delay(10); //can go down to 18-20
 	
     /* USER CODE END WHILE */
 

@@ -1,0 +1,44 @@
+[System]
+Name='FUZZY_controller4'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=6
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='error'
+Range=[-60 60]
+NumMFs=3
+MF1='LOW':'gauss2mf',[1 -60 15 -45]
+MF2='MID':'gbellmf',[10 2.5 0]
+MF3='HIGH':'gauss2mf',[15 45 1 60]
+
+[Input2]
+Name='error_derivative'
+Range=[-120 120]
+NumMFs=3
+MF1='LOW':'gauss2mf',[1 -120 25 -80]
+MF2='MID':'gbellmf',[15 2.5 0]
+MF3='HIGH':'gauss2mf',[25 80 1 120]
+
+[Output1]
+Name='control'
+Range=[-60 60]
+NumMFs=3
+MF1='LOW':'gauss2mf',[1 -60 15 -45]
+MF2='MID':'gbellmf',[10 2.5 0]
+MF3='HIGH':'gauss2mf',[15 45 1 60]
+
+[Rules]
+1 0, 3 (0.65) : 1
+2 0, 2 (0.52) : 1
+3 0, 1 (0.74) : 1
+0 1, 1 (0.38) : 1
+0 2, 2 (0.18) : 1
+0 3, 3 (0.55) : 1

@@ -24,7 +24,7 @@ def calculate_turn(turn2):
 	elif turn >= 10: #if between 10 and 99, turn right	
 		mes_turn = bytes(str('TR' + str(turn)), 'utf-8')
 	
-	print(mes_turn)	
+	print('Turn message: ', mes_turn.decode("utf-8"))	
 	ser.write(mes_turn)
 
 
@@ -68,11 +68,11 @@ def calculate_speed_adj(speed2):
 		mes_speed = bytes(str('SF99'), 'utf-8') 
 #-------------------------------------------------------
 	elif speed2 == -1:
-		mes_speed = bytes(str('SR04'), 'utf-8')
+		mes_speed = bytes(str('SR08'), 'utf-8')
 	elif speed2 == -2:
-		mes_speed = bytes(str('SR07'), 'utf-8')
+		mes_speed = bytes(str('SR12'), 'utf-8')
 	elif speed2 == -3:
-		mes_speed = bytes(str('SR15'), 'utf-8')
+		mes_speed = bytes(str('SR18'), 'utf-8')
 	elif speed2 == -4:
 		mes_speed = bytes(str('SR25'), 'utf-8')
 	elif speed2 == -5:
@@ -88,7 +88,7 @@ def calculate_speed_adj(speed2):
 	elif speed2 == -10:
 		mes_speed = bytes(str('SR99'), 'utf-8')
 	
-	print(mes_speed)	
+	print('Speed message: ', mes_speed.decode("utf-8"))	
 	ser.write(mes_speed)
 	
 	
@@ -96,53 +96,95 @@ def STOP_button_callback():
 	ser.write(b'SF00')
 	ser.write(b'TL00')
 	print('\n\t\t STOPPING THE ROBOT! \n')
+	print(ser.readline())
 	window['-SPEED-'].update(0)
 	window['-TURN-'].update(0)
+	ser.write(b'SF00')
+	ser.write(b'TL00')
 	
 	
+def TURN_slider_callback():
+	turn2 = int(values['-TURN-']) # [-10, 10] 
+	speed2 = int(values['-SPEED-']) # [-10, 10]
+	calculate_turn(turn2)
+	calculate_speed_adj(speed2)
 	
-dispatch_dictionary = {'-STOP-':STOP_button_callback}
+	
+def SPEED_slider_callback():
+	turn2 = int(values['-TURN-']) # [-10, 10] 
+	speed2 = int(values['-SPEED-']) # [-10, 10]
+	calculate_turn(turn2)
+	calculate_speed_adj(speed2)
+
+	
+dispatch_dictionary = {'-STOP-':STOP_button_callback,
+					   '-TURN-':TURN_slider_callback,
+					   '-SPEED-':SPEED_slider_callback}
 
 
 sg.theme('DarkTeal9')	# Add a touch of color
 
 try:
-	ser = serial.Serial(port='COM5', baudrate=9600) # , timeout=2)
+	ser = serial.Serial(port='COM5', baudrate=115200)#, bytesize=8, parity='N', stopbits=1, timeout=1)
 except OSError as err:
 	print("\n\t ***Cannot connect to device!*** \n\n \t {0}".format(err))
-	# print('\n \t Retrying in 5s')
 	sys.exit('\n\t ***Exiting***') # Terminate program imidiatelly if no device found
 
 print("**Connected to: " + ser.portstr +'**')
 
-layout = [  [sg.Frame('Steering:',[[	
-			 sg.Slider(range=(-10, 10), orientation='h', size=(40, 20), default_value=0, tick_interval=2, key='-TURN-', enable_events=True)]])],
-			[sg.Frame('Throttle:',[[
-			 sg.Slider(range=(-10, 10), orientation='v', size=(12, 30), default_value=0, tick_interval=2, key='-SPEED-', enable_events=True)]]),
-			 sg.Button('STOP', button_color=('white', 'firebrick4'), size=(20,2), key='-STOP-', enable_events=True)],
-			[sg.Frame('Controllers:',[[
-			 sg.Radio('No Controller',"RADIO1", key='-NO-', default=True),
-			 sg.Radio('PID Controller',"RADIO1", key='-PID-'),
-			 sg.Radio('Fuzzy Controller',"RADIO1", key='-FUZZY-'),]])]]
+#Column layout
+col = [  	[sg.Frame('Steering:',[[	
+			 sg.Slider(range=(-10, 10), orientation='h', size=(40, 28), default_value=0, tick_interval=2, key='-TURN-', enable_events=True)]])],
+			[sg.Frame('Controllers:',[
+			 [sg.Radio('No Controller',"RADIO1", key='-NO-', default=True)],
+			 [sg.Radio('PID Controller',"RADIO1", key='-PID-')],
+			 [sg.Radio('Fuzzy Controller',"RADIO1", key='-FUZZY-')]])],
+			[sg.Button('STOP', button_color=('white', 'firebrick4'), size=(20,2), key='-STOP-', enable_events=True)]
+	  ]
+	  
+col2 = [ [sg.Frame('Roll:',[[
+		   sg.Text('0.000000', size=(10, 2), font=('Arial', 12), justification='center', key='-PITCHOUTPUT-')]])],
+		 [sg.Frame('Pitch:',[[
+		   sg.Text('0.000000', size=(10, 2), font=('Arial', 12), justification='center', key='-ROLLOUTPUT-')]])],
+		 [sg.Frame('TIM3->CCR1:',[[
+		   sg.Text('00', size=(10, 2), font=('Arial', 12), justification='center', key='-TIM3-')]])],
+		 [sg.Frame('TIM2->CCR2:',[[
+		   sg.Text('00', size=(10, 2), font=('Arial', 12), justification='center', key='-TIM2-')]])],
+	   ]
 
-window = sg.Window('SPHERE PC Control', layout)
+layout = [  [sg.Frame('Throttle:',[[
+			 sg.Slider(range=(-10, 10), orientation='v', size=(12, 28), default_value=0, tick_interval=2, key='-SPEED-', enable_events=True)]]),
+			 sg.Column(col),
+			 sg.Column(col2)],
+			[sg.Frame('Terminal:',[[
+			 sg.Output(size=(100,25))]])],
+			[sg.Button('Update')]
+		 ]
+
+window = sg.Window('SPHERE PC Control', layout, element_justification = 'center')
 
 ser.write(b'SF00')
 
 controller_type = 0
 
 while True:
-	event, values = window.read()
+	event, values = window.read(timeout=300)
 			
 	if event == sg.WIN_CLOSED or event == 'Cancel':	# if user closes window or clicks cancel
 		ser.write(b'SF00')
 		break
 	elif values['-NO-'] == True:
 		controller_type = 0
+		mes_speed = bytes(str('NR00'), 'utf-8') # if no controller, send message 'Nxxx'
+		ser.write(mes_speed)
 	elif values['-PID-'] == True:
 		controller_type = 1
+		mes_speed = bytes(str('PR00'), 'utf-8') # if PID controller, send message 'Pxxx'
+		ser.write(mes_speed)
 	elif values['-FUZZY-'] == True:
 		controller_type = 2
+		mes_speed = bytes(str('FR00'), 'utf-8') # if Fuzzy controller, send message 'Fxxx'
+		ser.write(mes_speed)
 	
 	
 	# Lookup event in function dictionary
@@ -152,99 +194,45 @@ while True:
 	#else:
 	#	print('Event {} not in dispatch dictionary'.format(event))
 	
-	
-	speed2 = int(values['-SPEED-']) # [-10, 10]
-	turn2 = int(values['-TURN-']) # [-10, 10]
-	
-	 
+	#speed2 = int(values['-SPEED-']) # [-10, 10]
+	#turn2 = int(values['-TURN-']) # [-10, 10] 
 	
 	#Prepare and send the message to the robot:
-	
-	# SPEED:
-	calculate_speed_adj(speed2)
+		# SPEED:
+	#calculate_speed_adj(speed2)
 	
 	# TURN:
-	calculate_turn(turn2)
+	#calculate_turn(turn2)
 	
-	print(controller_type)
+	if controller_type == 0:
+		print('No controller enabled\n')
+	elif controller_type == 1:
+		print('PID controller enabled\n')
+	elif controller_type ==2:
+		print('Fuzzy controller enabled\n')
+	
+	ser.flushInput()
+	time.sleep(0.01)
+	received_text = ser.readline()
+	#print(received_text)
+	position = received_text.decode("utf-8")
+	position_values = position.split(',')
+	#print(position_values)
+	try:
+		roll_val = float(position_values[0])
+		pitch_val = float(position_values[1])
+		TIM2_val = int(position_values[2])
+		TIM3_val = int(position_values[3])
+	except(IndexError, ValueError):
+		print('\n\n\nERROR OCCURED\n\n\n')
+		continue
+	print('Pitch:     ', roll_val, '\nRoll:       ', pitch_val, '\nTIM2 reg: ', TIM2_val,'\nTIM3 reg: ',TIM3_val,'\n----------------------------------------------------------------------------------------------------------------')
+	
+	window['-ROLLOUTPUT-'].update('{:f}'.format(roll_val))
+	window['-PITCHOUTPUT-'].update('{:f}'.format(pitch_val))
+	window['-TIM3-'].update('{:d}'.format(TIM3_val))
+	window['-TIM2-'].update('{:d}'.format(TIM2_val))
 	
 
-
-window.close()
+#window.close()
 ser.close()
-
-'''
-# -TURN- and -SPEED- values can range from -10.0 to 10.0
-# 'speed' range from 0 to 100
-speed = 50 + int(values['-SPEED-'] * 5)
-	
-# print('Turn value: ',values['-TURN-'], ' Speed value: ',values['-SPEED-'])
-# sg.popup('Turn value: ',values['-TURN-'], ' Speed value: ',values['-SPEED-'])
-	
-	
-# def calculate_speed(speed2):
-	# speed = 10 * speed2 	# [-100, 100]
-	# #Make sure it is not 3 digit number:
-	# if speed == 100:
-		# speed -= 1
-	# if speed == -100:
-		# speed += 1
-	
-	# #Prepare a message:
-	# if speed == 0: #if 0, send message not to go
-		# mes_speed = bytes(str('SR00'), 'utf-8')
-	# elif speed < 0 and speed > -10: # if between -9 and -1, go backwards
-		# mes_speed = bytes(str('SR0' + str(abs(speed))), 'utf-8')
-	# elif speed <= -10: #if between -99 and -10, turn left
-		# mes_speed = bytes(str('SR' + str(abs(speed))), 'utf-8')
-	# elif speed > 0 and speed < 10:  # if between 1 and 9, turn right
-		# mes_speed = bytes(str('SF0' + str(speed)), 'utf-8')
-	# elif speed >= 10: #if between 10 and 99, turn right	
-		# mes_speed = bytes(str('SF' + str(speed)), 'utf-8')
-	
-	# print(mes_speed)	
-	# ser.write(mes_speed)
-	
-print('**STARTING SERVO**')
-ser.write(b'SF40')
-time.sleep(0.5)
-mess = ser.readline()
-print(mess)
-
-time.sleep(3)
-
-print('\n**STOPING SERVO**')
-ser.write(b'SF00')
-time.sleep(0.5)
-mess = ser.readline()
-print(mess)
-
-	
-print('Go to sleep')
-time.sleep(2)
-print('Wake up')
-
-done = False
-counter = 0
-
-print('entering while loop')
-
-while done==False:
-	message_turn_byte = b'sf60'
-	ser.write(message_turn_byte)
-	#time.sleep(2)
-	ser.readline()
-	
-	message_turn_byte = b'sr30'
-	ser.write(message_turn_byte)
-	#time.sleep(2)
-	ser.readline()
-	
-	counter += 1
-	
-	if counter == 1:
-		done=True
-
-print('Closing')
-'''
-

@@ -341,8 +341,8 @@ int main(void)
 		//KalmanXD = MPU6050.KalmanAngleX;
 		//KalmanYD = MPU6050.KalmanAngleY;
 		MPU6050_Read_All(&hi2c1, &MPU6050);
-		//ComplementaryFilter(&MPU6050, &roll, &pitch);
-		MadgwickAHRSupdateIMU(MPU6050.Gx, MPU6050.Gy, MPU6050.Gz, MPU6050.Ax, MPU6050.Ay, MPU6050.Az);
+		ComplementaryFilter(&MPU6050, &roll, &pitch);
+		//MadgwickAHRSupdateIMU(MPU6050.Gx, MPU6050.Gy, MPU6050.Gz, MPU6050.Ax, MPU6050.Ay, MPU6050.Az);
 		Pitch_m=100*(-asin (2*(q1*q3 - q0*q2)));
 		
 //		//roll 
@@ -357,7 +357,7 @@ int main(void)
 //    else
 //        pitch = asin(sinp);
 		
-		size = sprintf(send_data, "%.2f,%.2f,%.2f \n", MPU6050.KalmanAngleX, MPU6050.KalmanAngleY, Pitch_m);
+		size = sprintf(send_data, "%.2f,%.2f,%.2f,%.2f \n", roll, pitch, MPU6050.KalmanAngleX, MPU6050.KalmanAngleY);
 		HAL_UART_Transmit_IT(&huart1, send_data, size);
 		HAL_Delay (25);
   }
@@ -640,7 +640,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

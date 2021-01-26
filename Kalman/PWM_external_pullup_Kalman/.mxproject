@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/Adrian/Documents/Praca Magisterska/Robot kulisty by Adrian/SPHERE_repo/PWM_external_pullup/Inc
+HeaderPath=C:/Users/Adrian/Documents/Praca Magisterska/Robot kulisty by Adrian/SPHERE_repo/Kalman/PWM_external_pullup_Kalman/Inc
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=C:/Users/Adrian/Documents/Praca Magisterska/Robot kulisty by Adrian/SPHERE_repo/PWM_external_pullup/Src
+SourcePath=C:/Users/Adrian/Documents/Praca Magisterska/Robot kulisty by Adrian/SPHERE_repo/Kalman/PWM_external_pullup_Kalman/Src
 SourceFiles=stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
