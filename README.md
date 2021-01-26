@@ -2,10 +2,10 @@
 
 Manual:
 
-To use DualShock 4 controller:
-	a. Open DS4 Windows and enabe bluetooth on the device, 
-	b. Switch on the DS4 pad,
-	c. Let it cnnect to the app
+- To use DualShock 4 controller:
+  - a. Open DS4 Windows and enabe bluetooth on the device, 
+  - b. Switch on the DS4 pad,
+  - c. Let it cnnect to the app
 	d. Switch on the robot
 	e. Execute SPHERE_DS4_Control.py
 To use PC GUI appication: 
