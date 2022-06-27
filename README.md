@@ -4,6 +4,8 @@ This is a repository that stores source code for spherical robot "SPHERE".
 The robot was developed and built by the students of AGH University of Science and Technology.   
 Kraków, 2018/2019. 
 
+![SPHERE Spherical Robot](/Pictures/sphere.png "SPHERE")
+
 ## How to begin:
 
 - To use DualShock 4 controller:
@@ -19,14 +21,14 @@ Kraków, 2018/2019.
   - Execute `SPHERE_PC_Control.py`
 &nbsp;  
 
-## How to controll the robot with PC app:
+## How to control the robot with PC app:
 
 ![PC Control app](/Pictures/GUI3.PNG "PC Control app")
 
-* Throttle section allows the user to set the desired value of the robot’s velocity.  
-* Steering section allows the user to lean the pendulum and turn the robot.  
-* Controllers section lets the user choose what controller should be used in the robot.  
-* Stop button resets throttle and steering values to 0. It is a safety button.    
+* `Throttle` section allows the user to set the desired value of the robot’s velocity.  
+* `Steering` section allows the user to lean the pendulum and turn the robot sideways.  
+* `Controllers` section lets the user choose what controller should be used.  
+* `STOP` button resets throttle and steering values to 0. It is a safety button.    
 &nbsp;    
   
 ## How to controll the robot with DS4:
@@ -34,8 +36,8 @@ Kraków, 2018/2019.
 ![Dual Shock 4 controlls](/Pictures/DS4_resized.PNG "Dual Shock 4")
   
 * Analog joystick `1` allows to set pendulum inclination and turn the robot.  
-* L2 button marked as `2` controlls robot’s backward speed.  
-* R2 button marked as `3` controlls robot’s forward speed.  
+* L2 button marked as `2` controls robot’s backward speed.  
+* R2 button marked as `3` controls robot’s forward speed.  
 * Buttons marked as `4` allow user to change controller type. Controller selection:   
 &nbsp;&nbsp;&nbsp;&nbsp; `X` - no controller  
 &nbsp;&nbsp;&nbsp;&nbsp; `square` - PID controller   
@@ -45,3 +47,8 @@ Kraków, 2018/2019.
 ## Functional block diagram:
 
 ![Functional block diagram](/Pictures/diagram8.png "Functional block diagram")
+
+&nbsp;  
+
+## Contact 
+If you have further interest in SPHERE spherical robot, feel free to drop me an email at: <adrian.luberda96@gmail.com>
