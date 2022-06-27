@@ -20,7 +20,7 @@ Kraków, 2018/2019.
 
 ## How to controll the robot:
 
-![Dual Shock 4 controlls](/Pictures/DS4-resized.PNG "Dual Shock 4")
+![Dual Shock 4 controlls](/Pictures/DS4_resized.PNG "Dual Shock 4")
 
 
 * Analog joystick `1` allows to set pendulum inclination and turn the robot.  
