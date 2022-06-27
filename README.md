@@ -28,7 +28,7 @@ Kraków, 2018/2019.
 * Steering section allows the user to lean the pendulum and turn the robot.  
 * Controllers section lets the user choose what controller should be used in the robot.  
 * Stop button resets throttle and steering values to 0. It is a safety button.    
-&nbsp;  
+&nbsp;    
   
 ## How to controll the robot with DS4:
 
