@@ -16,5 +16,3 @@ How to controll the robot:
 - To use PC GUI application: 
   - Switch on the robot
   - Execute `SPHERE_PC_Control.py`
-
--
