@@ -9,7 +9,7 @@ Kraków, 2018/2019.
 - To use DualShock 4 controller:
   - Open DS4 Windows and enable laptop's bluetooth 
   - Switch on the DS4 controller
-  - Let it connect to the app
+  - Connect the controller to the app
   - Switch on the robot
   - Execute `SPHERE_DS4_Control.py`
 &nbsp;    
@@ -17,12 +17,11 @@ Kraków, 2018/2019.
 - To use PC GUI application: 
   - Switch on the robot
   - Execute `SPHERE_PC_Control.py`
-
 &nbsp;  
 
 ## How to controll the robot with PC app:
 
-![PC Control app](/Pictures/GUI3.PNG "Dual Shock 4")
+![PC Control app](/Pictures/GUI3.PNG "PC Control app")
 
 * Throttle section allows the user to set the desired value of the robot’s velocity.  
 * Steering section allows the user to lean the pendulum and turn the robot.  
@@ -41,3 +40,8 @@ Kraków, 2018/2019.
 &nbsp;&nbsp;&nbsp;&nbsp; `X` - no controller  
 &nbsp;&nbsp;&nbsp;&nbsp; `square` - PID controller   
 &nbsp;&nbsp;&nbsp;&nbsp; `circle` - Fuzzy controller  
+&nbsp;  
+
+## Functional block diagram:
+
+![Functional block diagram](/Pictures/diagram8.png "Functional block diagram")
