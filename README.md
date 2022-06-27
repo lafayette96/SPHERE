@@ -4,7 +4,7 @@ This is a repository that stores source code for spherical robot "SPHERE".
 The robot was developed and built by the students of AGH University of Science and Technology.   
 Kraków, 2018/2019. 
 
-How to begin:
+## How to begin:
 
 - To use DualShock 4 controller:
   - Open DS4 Windows and enable laptop's bluetooth 
@@ -18,9 +18,9 @@ How to begin:
   - Execute `SPHERE_PC_Control.py`
 
 
-How to controll the robot:
+## How to controll the robot:
 
-![Dual Shock 4 controlls](/Pictures/DS4.PNG "Dual Shock 4")
+![Dual Shock 4 controlls](/Pictures/DS4-resized.PNG "Dual Shock 4")
 
 
 * Analog joystick `1` allows to set pendulum inclination and turn the robot.  
