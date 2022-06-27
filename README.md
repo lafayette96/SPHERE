@@ -11,18 +11,29 @@ Kraków, 2018/2019.
   - Switch on the DS4 controller
   - Let it connect to the app
   - Switch on the robot
-  - Execute `SPHERE_DS4_Control.py`  
+  - Execute `SPHERE_DS4_Control.py`
+&nbsp;    
 
 - To use PC GUI application: 
   - Switch on the robot
   - Execute `SPHERE_PC_Control.py`
 
+&nbsp;  
 
-## How to controll the robot:
+## How to controll the robot with PC app:
 
-![Dual Shock 4 controlls](/Pictures/DS4-resized.PNG "Dual Shock 4")
+![PC Control app](/Pictures/GUI3.PNG "Dual Shock 4")
 
+* Throttle section allows the user to set the desired value of the robot’s velocity.  
+* Steering section allows the user to lean the pendulum and turn the robot.  
+* Controllers section lets the user choose what controller should be used in the robot.  
+* Stop button resets throttle and steering values to 0. It is a safety button.    
+&nbsp;  
+  
+## How to controll the robot with DS4:
 
+![Dual Shock 4 controlls](/Pictures/DS4_resized.PNG "Dual Shock 4")
+  
 * Analog joystick `1` allows to set pendulum inclination and turn the robot.  
 * L2 button marked as `2` controlls robot’s backward speed.  
 * R2 button marked as `3` controlls robot’s forward speed.  
